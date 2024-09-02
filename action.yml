@@ -4,7 +4,7 @@ inputs:
   name:
     description: 'Name of the artifact, e.g. FStar'
     required: true
-  name:
+  hometag:
     description: 'HOME tag, if you want a variable set. E.g. "FSTAR" if you want "FSTAR_HOME" set.'
     required: false
 
@@ -15,9 +15,17 @@ runs:
       uses: actions/download-artifact@master
       with:
         name: ${{ inputs.name }}
+
     - name: Untar
       shell: bash
       run: tar xzf '${{ inputs.name }}.tar.gz'
+
     - name: Remove tarball
       shell: bash
       run: rm '${{ inputs.name }}.tar.gz'
+
+    - name: Set HOME variable
+      if: ${{ inputs.hometag }}
+      shell: bash
+      run: |
+        echo "${{ inputs.hometag }}_HOME=$(pwd)/${{ inputs.name }}" >> $GITHUB_ENV
