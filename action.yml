@@ -1,0 +1,23 @@
+name: 'Download Everest CI artifact'
+# description: 'Greet someone'
+inputs:
+  name:
+    description: 'Name of the artifact, e.g. FStar'
+    required: true
+  name:
+    description: 'HOME tag, if you want a variable set. E.g. "FSTAR" if you want "FSTAR_HOME" set.'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get artifact
+      uses: actions/download-artifact@master
+      with:
+        name: ${{ inputs.name }}
+    - name: Untar
+      shell: bash
+      run: tar xzf '${{ inputs.name }}.tar.gz'
+    - name: Remove tarball
+      shell: bash
+      run: rm '${{ inputs.name }}.tar.gz'
