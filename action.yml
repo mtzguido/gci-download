@@ -3,9 +3,9 @@ inputs:
   name:
     description: 'Name of the artifact, e.g. FStar'
     required: true
-  no_set_home:
-    description: 'Do not set the _HOME variable, even if present in the artifact'
-    default: false
+  set_home:
+    description: 'Set the _HOME variables specified by the artifact. Default: true'
+    default: true
 
 runs:
   using: "composite"
@@ -24,7 +24,7 @@ runs:
       run: rm '${{ inputs.name }}.tar.gz'
 
     - name: Process home tags
-      if: ${{ not inputs.no_set_home }}
+      if: ${{ inputs.set_home }}
       shell: bash
       run: |
         find . -name .hometag | 
