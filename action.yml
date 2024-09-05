@@ -1,12 +1,11 @@
 name: 'Download Everest CI artifact'
-# description: 'Greet someone'
 inputs:
   name:
     description: 'Name of the artifact, e.g. FStar'
     required: true
-  hometag:
-    description: 'HOME tag, if you want a variable set. E.g. "FSTAR" if you want "FSTAR_HOME" set.'
-    required: false
+  no_set_home:
+    description: 'Do not set the _HOME variable, even if present in the artifact'
+    default: false
 
 runs:
   using: "composite"
@@ -24,8 +23,13 @@ runs:
       shell: bash
       run: rm '${{ inputs.name }}.tar.gz'
 
-    - name: Set HOME variable
-      if: ${{ inputs.hometag }}
+    - name: Process home tags
+      if: ${{ not inputs.no_set_home }}
       shell: bash
       run: |
-        echo "${{ inputs.hometag }}_HOME=$(pwd)/${{ inputs.name }}" >> $GITHUB_ENV
+        find . -name .hometag | 
+        while read f; do
+          H=$(cat $f)
+          echo "${H}_HOME=$(realpath $(dirname $f))" >> $GITHUB_ENV
+          rm -f $f
+        done 
